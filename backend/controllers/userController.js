@@ -1,34 +1,31 @@
-// controllers/userController.js
+const User = require('../models/User');
 
-// mảng tạm lưu user
-let users = [
-  // ví dụ mẫu
-  //{ id: 1697040000000, name: "Nguyen Van A", email: "a@example.com" }
-];
-
-exports.getUsers = (req, res) => {
-  res.json(users);
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find().sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch users' });
+  }
 };
 
-exports.createUser = (req, res) => {
-  const { name, email } = req.body;
+exports.createUser = async (req, res) => {
+  try {
+    const { name, email } = req.body;
 
-  // validation cơ bản
-  if (!name || !email) {
-    return res.status(400).json({ message: "Name và email là bắt buộc" });
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Name và email là bắt buộc' });
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({ message: 'Email không hợp lệ' });
+    }
+
+    const created = await User.create({ name: name.trim(), email: email.trim() });
+    return res.status(201).json(created);
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'Email đã tồn tại' });
+    }
+    return res.status(500).json({ message: 'Failed to create user' });
   }
-  if (!/\S+@\S+\.\S+/.test(email)) {
-    return res.status(400).json({ message: "Email không hợp lệ" });
-  }
-
-  // tạo id đơn giản (timestamp)
-  const newUser = {
-    id: Date.now(),
-    name: name.trim(),
-    email: email.trim()
-  };
-
-  users.push(newUser);
-
-  return res.status(201).json(newUser);
 };
