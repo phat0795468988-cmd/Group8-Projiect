@@ -36,13 +36,13 @@ function App() {
   };
 
   return (
-    <div style={{ maxWidth: 640, margin: '32px auto', padding: '0 16px' }}>
-      <h2>Users</h2>
+    <div className="container">
+      <h2 className="title">Users</h2>
       <AddUser onCreate={handleCreate} />
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
-        <p style={{ color: 'red' }}>{error}</p>
+        <p className="error">{error}</p>
       ) : (
         <UserList users={users} />
       )}
