@@ -1,12 +1,14 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/user');
+const cors = require('cors');
 
 dotenv.config();
 
 const app = express();
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 
 // Health check
