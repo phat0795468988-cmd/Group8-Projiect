@@ -11,11 +11,16 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://phat0795468988:Gro
 async function start() {
   try {
     console.log('Attempting to connect to MongoDB...');
+    console.log('MongoDB URI:', MONGODB_URI);
+    
     await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
     });
-    console.log('✅ MongoDB connected successfully');
+    
+    console.log('✅ MongoDB connected successfully to database: groupDB');
+    console.log('📊 Connected to collection: users');
 
     const server = http.createServer(app);
     server.listen(PORT, () => {
@@ -26,6 +31,7 @@ async function start() {
     });
   } catch (err) {
     console.error('❌ MongoDB connection failed:', err.message);
+    console.error('Full error:', err);
     console.log('🔄 Starting server without database (in-memory mode)...');
     
     const server = http.createServer(app);

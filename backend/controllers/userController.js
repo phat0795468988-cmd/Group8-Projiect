@@ -36,12 +36,18 @@ exports.createUser = async (req, res) => {
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
 
+    console.log('MongoDB connection state:', mongoose.connection.readyState);
+    console.log('Creating user:', { name: trimmedName, email: trimmedEmail });
+
     // Nếu MongoDB đã kết nối, dùng database
     if (mongoose.connection.readyState === 1) {
+      console.log('Using MongoDB database...');
       const created = await User.create({ name: trimmedName, email: trimmedEmail });
+      console.log('User created in MongoDB:', created);
       return res.status(201).json(created);
     }
 
+    console.log('MongoDB not connected, using in-memory storage...');
     // Fallback: kiểm tra email trùng lặp trong memory
     const existingUser = inMemoryUsers.find(user => user.email === trimmedEmail);
     if (existingUser) {
@@ -57,10 +63,12 @@ exports.createUser = async (req, res) => {
     };
     
     inMemoryUsers.unshift(newUser);
+    console.log('User created in memory:', newUser);
     return res.status(201).json(newUser);
 
   } catch (err) {
     console.error('Database error:', err.message);
+    console.error('Full error:', err);
     
     if (err.code === 11000) {
       return res.status(409).json({ message: 'Email đã tồn tại' });
@@ -76,6 +84,7 @@ exports.createUser = async (req, res) => {
         createdAt: new Date().toISOString()
       };
       inMemoryUsers.unshift(newUser);
+      console.log('Fallback: User created in memory:', newUser);
       return res.status(201).json(newUser);
     }
     
