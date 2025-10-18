@@ -6,7 +6,7 @@ const app = require('./index');
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://testuser:testpass123@cluster0.8ciikqw.mongodb.net/groupDB?retryWrites=true&w=majority&appName=Cluster01';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://phat0795468988:Group8Project123@cluster0.8ciikqw.mongodb.net/groupDB?retryWrites=true&w=majority&appName=Cluster01';
 
 async function start() {
   try {
