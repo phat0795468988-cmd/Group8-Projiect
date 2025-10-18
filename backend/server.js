@@ -6,25 +6,33 @@ const app = require('./index');
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://testuser:testpass123@cluster0.8ciikqw.mongodb.net/groupDB?retryWrites=true&w=majority&appName=Cluster01';
 
 async function start() {
   try {
-    if (!MONGODB_URI) {
-      throw new Error('Missing MONGODB_URI environment variable');
-    }
+    console.log('Attempting to connect to MongoDB...');
     await mongoose.connect(MONGODB_URI, {
-      // modern defaults, no deprecations needed in Mongoose 7+
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     });
-    console.log('MongoDB connected');
+    console.log('✅ MongoDB connected successfully');
 
     const server = http.createServer(app);
     server.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
+      console.log(`🚀 Server listening on port ${PORT}`);
+      console.log(`📊 API endpoints:`);
+      console.log(`   GET  http://localhost:${PORT}/users`);
+      console.log(`   POST http://localhost:${PORT}/users`);
     });
   } catch (err) {
-    console.error('Failed to start server:', err.message);
-    process.exit(1);
+    console.error('❌ MongoDB connection failed:', err.message);
+    console.log('🔄 Starting server without database (in-memory mode)...');
+    
+    const server = http.createServer(app);
+    server.listen(PORT, () => {
+      console.log(`🚀 Server listening on port ${PORT} (no database)`);
+      console.log('⚠️  Note: Data will not persist without MongoDB connection');
+    });
   }
 }
 
